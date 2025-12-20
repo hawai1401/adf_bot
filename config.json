@@ -1,0 +1,14 @@
+{
+  "bot-id": "1450196696041652315",
+  "owner-id": ["1091617877725024326"],
+  "prefix": "adf!",
+  "embed": {
+    "normal": 0,
+    "success": 7929736,
+    "success_2": 7929791,
+    "warn": 16697403,
+    "error": 16669789,
+    "question": 1299445
+  },
+  "interaction_time": 120000
+}
