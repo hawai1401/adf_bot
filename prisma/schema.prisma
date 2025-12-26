@@ -17,7 +17,10 @@ model serveur {
   description         String   @default("")
   description_pending String
   logoURL             String?
-  badges              badges[]
+  badges              badges[] @default([])
+  badges_pending      badges[]
+  link                String   @default("")
+  link_pending        String
   createAt            DateTime @default(now())
   updatedAt           DateTime @updatedAt
   owner               User     @relation(references: [id], fields: [userId])
