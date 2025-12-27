@@ -13,7 +13,7 @@ export const event = async (
     where: { id: guildId },
     data: {
       description_pending: "",
-      badges_pending: [],
+      tags_pending: [],
       link_pending: "",
       pending: false,
     },

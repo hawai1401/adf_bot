@@ -17,8 +17,8 @@ model serveur {
   description         String   @default("")
   description_pending String
   logoURL             String?
-  badges              badges[] @default([])
-  badges_pending      badges[]
+  tags                tags[]   @default([])
+  tags_pending        tags[]
   link                String   @default("")
   link_pending        String
   createAt            DateTime @default(now())
@@ -28,11 +28,19 @@ model serveur {
   member_count        Int
 }
 
-enum badges {
+enum tags {
+  E_Sport
   Pub
   Rp
-  Graphisme
+  Art
   Communautaire
+  Gaming
+  Informatique
+  Micronation
+  Sport
+  Audiovisuel
+
+  @@map("tags")
 }
 
 model User {
