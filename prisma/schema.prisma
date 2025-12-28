@@ -13,6 +13,7 @@ model serveur {
   id                  String   @id @unique
   approuved           Boolean  @default(false)
   pending             Boolean  @default(true)
+  whitelist           Boolean  @default(false)
   nom                 String
   description         String   @default("")
   description_pending String
