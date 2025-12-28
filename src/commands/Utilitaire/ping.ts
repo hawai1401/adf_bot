@@ -7,7 +7,7 @@ import {
 } from "discord.js";
 import config from "../../../config.json" with { type: "json" };
 import type { botClient } from "../../index.js";
-import prisma from "../../db/prisma.js";
+import { prisma } from "../../db/prisma.js";
 
 export const name = "ping";
 export const description =

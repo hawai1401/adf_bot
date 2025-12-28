@@ -1,6 +1,6 @@
 import { MessageFlags, type ButtonInteraction } from "discord.js";
 import type { botClient } from "../../index.js";
-import prisma from "../../db/prisma.js";
+import { prisma } from "../../db/prisma.js";
 import Container from "../../class/container.js";
 
 export const event = async (
@@ -27,14 +27,14 @@ export const event = async (
   });
   await interaction.message.delete();
   if (interaction.customId.split("_")[2] === "edited")
-  await interaction.editReply({
-    components: [
-      new Container("success").addText(
-        `### :white_check_mark: - Modifications acceptées !`
-      ),
-    ],
-    flags: MessageFlags.IsComponentsV2,
-  });
+    await interaction.editReply({
+      components: [
+        new Container("success").addText(
+          `### :white_check_mark: - Modifications acceptées !`
+        ),
+      ],
+      flags: MessageFlags.IsComponentsV2,
+    });
   await interaction.editReply({
     components: [
       new Container("success").addText(

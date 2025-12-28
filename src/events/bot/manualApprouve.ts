@@ -1,8 +1,7 @@
-import { EmbedBuilder, Message } from "discord.js";
+import { EmbedBuilder, Message, TextChannel } from "discord.js";
 import config from "../../../config.json" with { type: "json" };
 import type { botClient } from "../../index.js";
-import { createRequire } from "module";
-import prisma from "../../db/prisma.js";
+import { prisma } from "../../db/prisma.js";
 
 export const type = "messageCreate";
 
@@ -12,7 +11,6 @@ export const event = async (client: botClient, message: Message) => {
     !config["owner-id"].includes(message.author.id)
   )
     return;
-
   const guildIdError = async () => {
     const embed = new EmbedBuilder()
       .setFields({
@@ -46,7 +44,6 @@ export const event = async (client: botClient, message: Message) => {
   });
 
   const embed = new EmbedBuilder()
-
     .setFields({
       name: ":white_check_mark: - Succès",
       value: `> Serveur approuvé`,

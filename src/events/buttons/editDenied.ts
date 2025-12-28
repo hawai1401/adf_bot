@@ -1,7 +1,7 @@
 import { MessageFlags, type ButtonInteraction } from "discord.js";
 import type { botClient } from "../../index.js";
 import Container from "../../class/container.js";
-import prisma from "../../db/prisma.js";
+import { prisma } from "../../db/prisma.js";
 
 export const event = async (
   client: botClient,
