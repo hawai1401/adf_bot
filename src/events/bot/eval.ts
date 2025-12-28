@@ -8,19 +8,17 @@ export const type = "messageCreate";
 export const event = async (client: botClient, message: Message) => {
   if (
     !message.content.startsWith(String(`${config.prefix}eval`)) ||
-    (!config["owner-id"].includes(message.author.id) &&
-      !config["beta-id"].includes(message.author.id))
+    !config["owner-id"].includes(message.author.id)
   )
     return;
 
   const require = createRequire(import.meta.url);
-  const { handleStop } = require("./clientReady");
   try {
-    
-    const code = message.content.slice(String(`${config.prefix}eval`).length + 1)
+    const code = message.content.slice(
+      String(`${config.prefix}eval`).length + 1
+    );
     const result = await eval(
       `(async () => {
-        const stop = async () => handleStop(await client.channels.fetch("1413831946492055552"));
       ${code}
       })()`
     );
