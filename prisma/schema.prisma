@@ -46,6 +46,7 @@ enum tags {
 
 model User {
   id            String   @id
+  discord_id    String   @default("")
   email         String   @unique
   name          String?
   emailVerified Boolean  @default(false)

@@ -39,14 +39,17 @@ export const command = async (
   interaction: ChatInputCommandInteraction
 ) => {
   const guildId = interaction.options.getString("serveur-id", true);
-  const id = interaction.options.getString("user-id", true);
-  const owner = await prisma.user.findUnique({
+  const user = interaction.options.getUser("user-id", true);
+  const owner = await prisma.user.findFirst({
     where: {
-      id,
+      discord_id: user.id,
     },
   });
-  if (!owner) return erreur("ID utilisateur invalide !", interaction);
-  interaction.guild?.members.me?.permissions.toArray();
+  if (!owner)
+    return erreur(
+      "Cet id discord n'est pas dans la base de données !\nL'utilisateur doit se connecter au [site](https://adf.hawai1401.fr/) afin de s'enregistrer.",
+      interaction
+    );
   await prisma.serveur.create({
     data: {
       id: guildId,
@@ -59,7 +62,7 @@ export const command = async (
       nom: "",
       owner: {
         connect: {
-          id,
+          id: owner.id,
         },
       },
     },
