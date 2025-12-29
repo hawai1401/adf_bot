@@ -22,12 +22,10 @@ export const cmd_builder = new SlashCommandBuilder()
       .setDescription("L'id du serveur à whitelist")
       .setRequired(true)
   )
-  .addStringOption((o) =>
+  .addUserOption((o) =>
     o
-      .setName("user-id")
-      .setDescription(
-        "L'id de la base de données du owner du serveur à whitelist"
-      )
+      .setName("user")
+      .setDescription("Le propriétaire du serveur à whitelist")
       .setRequired(true)
   )
   .setContexts([InteractionContextType.Guild])
