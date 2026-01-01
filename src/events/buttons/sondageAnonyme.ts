@@ -12,22 +12,38 @@ import {
 } from "discord.js";
 import type { botClient } from "../../index.js";
 import Container from "../../class/container.js";
+import { getDb } from "../../db/mongo.js";
+import { ObjectId } from "mongodb";
 
 export const event = async (
   client: botClient,
   interaction: ButtonInteraction
 ) => {
-  type APIButtonV2 = {
-    type: 2;
-    data: APIButtonComponentWithCustomId;
-    url: never;
-    style: never;
-  };
+  interface sondage {
+    _id?: ObjectId;
+    name: string;
+    pour: string[];
+    contre: string[];
+    ended: boolean;
+  }
 
   const vote = interaction.customId.split("_")[1] as "pour" | "contre";
-  const votants = interaction.customId.split("_").slice(2);
+  const db = getDb().collection("sondage");
+  const userId = interaction.user.id;
 
-  if (votants.includes(interaction.user.id))
+  const container = new ContainerBuilder(
+    JSON.parse(JSON.stringify(interaction.message
+    .components[0] as APIContainerComponent))
+  );
+  
+  const id = interaction.customId.split("_")[2]!;
+  const sondage = (await db.findOne({
+    _id: new ObjectId(id),
+  })) as sondage | null;
+  if (!sondage)
+    throw new Error("Une erreur est survenue pour trouver le sondage en db");
+
+  if (sondage[vote].includes(userId))
     return await interaction.reply({
       components: [
         new Container("error").addText(`### :x: - Vous avez déjà voté !`),
@@ -35,61 +51,35 @@ export const event = async (
       flags: [MessageFlags.IsComponentsV2, MessageFlags.Ephemeral],
     });
 
-  const containerData = interaction.message
-    .components[0] as APIContainerComponent;
-  const container = new ContainerBuilder(
-    JSON.parse(JSON.stringify(containerData))
-  );
-
-  const pour = Number(
-    (containerData.components[2] as APITextDisplayComponent).content.slice(4)
-  );
-  const pour_btn = (container.components[6]! as ActionRowBuilder<ButtonBuilder>)
-    .components[0]!;
-  const pour_votants = (
-    containerData.components[6]! as APIActionRowComponent<APIButtonV2>
-  ).components[0]!.data.custom_id.split("_").slice(2);
-  const contre = Number(
-    (containerData.components[4] as APITextDisplayComponent).content.slice(4)
-  );
-  const contre_btn = (
-    container.components[6]! as ActionRowBuilder<ButtonBuilder>
-  ).components[1]!;
-  const contre_votants = (
-    containerData.components[6]! as APIActionRowComponent<APIButtonV2>
-  ).components[1]!.data.custom_id.split("_").slice(2);
-
-  votants.push(interaction.user.id);
+  const pour = sondage.pour.length;
+  const contre = sondage.contre.length;
 
   if (vote === "pour") {
     (container.components[2] as TextDisplayBuilder).setContent(
       `✅ : ${pour + 1}`
     );
-    if (contre_votants.includes(interaction.user.id))
+    sondage.pour.push(userId);
+    if (sondage.contre.includes(userId)) {
       (container.components[4] as TextDisplayBuilder).setContent(
         `❌ : ${contre - 1}`
       );
-    pour_btn.setCustomId(`sondageAnonyme_pour_${votants.join("_")}`);
-    contre_btn.setCustomId(
-      `sondageAnonyme_contre_${contre_votants
-        .filter((v) => v !== interaction.user.id)
-        .join("_")}`
-    );
+      sondage.contre = sondage.contre.filter((v) => v !== userId);
+    }
   } else {
     (container.components[4] as TextDisplayBuilder).setContent(
       `❌ : ${contre + 1}`
     );
-    if (pour_votants.includes(interaction.user.id))
+    sondage.contre.push(userId);
+    if (sondage.pour.includes(userId)) {
       (container.components[2] as TextDisplayBuilder).setContent(
         `✅ : ${pour - 1}`
       );
-    pour_btn.setCustomId(
-      `sondageAnonyme_pour_${pour_votants
-        .filter((v) => v !== interaction.user.id)
-        .join("_")}`
-    );
-    contre_btn.setCustomId(`sondageAnonyme_contre_${votants.join("_")}`);
+      sondage.pour = sondage.pour.filter((v) => v !== userId);
+    }
   }
+
+  delete sondage._id;
+  db.findOneAndReplace({ _id: new ObjectId(id) }, sondage);
 
   await interaction.update({
     components: [container],

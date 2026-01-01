@@ -8,6 +8,7 @@ import {
 import { config } from "dotenv";
 config({ quiet: true });
 import { deployementEvent } from "./handlers/events.js";
+import { connect } from "./db/mongo.js";
 
 export class botClient extends Client {
   public commands: Collection<
@@ -41,4 +42,5 @@ const client = new botClient({
 console.log("Déploiement des events ...");
 await deployementEvent(client);
 console.log("Events déployés avec succès !");
+await connect()
 client.login(process.env.TOKEN);

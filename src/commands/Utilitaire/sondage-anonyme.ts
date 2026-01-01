@@ -13,12 +13,16 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   TextDisplayBuilder,
+  type APIActionRowComponent,
+  type APIButtonComponentWithCustomId,
 } from "discord.js";
 import type { botClient } from "../../index.js";
 import erreur from "../../functions/error.js";
 import Container from "../../class/container.js";
 import Button from "../../class/button.js";
 import success from "../../functions/success.js";
+import { getDb } from "../../db/mongo.js";
+import { ObjectId } from "mongodb";
 
 export const name = "sondage-anonyme";
 export const description = "Faire un sondage anonyme.";
@@ -65,8 +69,17 @@ export const command = async (
       { ephemeral: true }
     );
   await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+  const db = getDb().collection("sondage");
   if (interaction.options.getSubcommand(true) === "commencer") {
     const raison = interaction.options.getString("raison", true);
+    const id = new ObjectId();
+    await db.insertOne({
+      _id: id,
+      name: raison,
+      pour: [],
+      contre: [],
+      ended: false,
+    });
     const msg = await interaction.channel.send({
       components: [
         new Container("normal")
@@ -80,12 +93,12 @@ export const command = async (
             new Button(
               "vert",
               { text: "Pour", emoji: "✔️" },
-              "sondageAnonyme_pour"
+              `sondageAnonyme_pour_${id.toString()}`
             ),
             new Button(
               "rouge",
               { text: "Contre", emoji: "✖️" },
-              "sondageAnonyme_contre"
+              `sondageAnonyme_contre_${id.toString()}`
             )
           ),
       ],
@@ -117,7 +130,7 @@ export const command = async (
       JSON.parse(JSON.stringify(containerData))
     );
 
-    sondage.message.unpin("Sondage terminé")
+    sondage.message.unpin("Sondage terminé");
 
     let err = false;
 
@@ -144,6 +157,19 @@ export const command = async (
     (container.components[4] as TextDisplayBuilder).setContent(
       `❌ : ${contre} (${((contre / (pour + contre)) * 100).toFixed(2)}%)`
     );
+
+    type APIButtonV2 = {
+      type: 2;
+      data: APIButtonComponentWithCustomId;
+      url: never;
+      style: never;
+    };
+
+    const id = (
+      containerData.components[6] as APIActionRowComponent<APIButtonV2>
+    ).components[0]!.data.custom_id.split("_")[2]!;
+
+    await db.findOneAndUpdate({ _id: new ObjectId(id) }, { ended: true });
 
     await sondage.message.edit({
       components: [container],

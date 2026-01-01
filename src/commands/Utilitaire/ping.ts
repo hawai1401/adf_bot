@@ -8,6 +8,7 @@ import {
 import config from "../../../config.json" with { type: "json" };
 import type { botClient } from "../../index.js";
 import { prisma } from "../../db/prisma.js";
+import { getDb } from "../../db/mongo.js";
 
 export const name = "ping";
 export const description =
@@ -32,9 +33,14 @@ export const command = async (
 ) => {
   await interaction.deferReply();
 
-  const now = performance.now();
+  const now_prisma = performance.now();
   await prisma.$queryRaw`SELECT 1`;
-  const ping_db = performance.now() - now;
+  const ping_prisma = performance.now() - now_prisma;
+
+  const db = getDb()
+  const now_mongodb = performance.now();
+  await db.admin().ping()
+  const ping_mongodb = performance.now() - now_mongodb;
 
   const start = performance.now();
   await fetch("https://discord.com/api");
@@ -51,8 +57,12 @@ export const command = async (
           },
           { name: ":robot: - Bot", value: `**${bot.ws.ping}** ms` },
           {
-            name: ":file_cabinet: - Base de données",
-            value: `**${ping_db.toFixed(2)}** ms`,
+            name: ":file_cabinet: - Base de données (Prisma)",
+            value: `**${ping_prisma.toFixed(2)}** ms`,
+          },
+          {
+            name: ":file_cabinet: - Base de données (MongoDB)",
+            value: `**${ping_mongodb.toFixed(2)}** ms`,
           }
         )
         .setFooter({
