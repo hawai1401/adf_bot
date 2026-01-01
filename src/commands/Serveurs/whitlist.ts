@@ -37,7 +37,7 @@ export const command = async (
   interaction: ChatInputCommandInteraction
 ) => {
   const guildId = interaction.options.getString("serveur-id", true);
-  const user = interaction.options.getUser("user-id", true);
+  const user = interaction.options.getUser("user", true);
   const owner = await prisma.user.findFirst({
     where: {
       discord_id: user.id,
