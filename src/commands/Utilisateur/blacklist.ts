@@ -11,11 +11,7 @@ import type { botClient } from "../../index.js";
 import { prisma } from "../../db/prisma.js";
 import config from "../../../config.json" with { type: "json" };
 
-<<<<<<< HEAD
 export const name = "blacklist";
-=======
-export const name = "blacklist-add";
->>>>>>> ad1cf72df7d1347449136ca6ecc8813f321e4e2e
 export const description = "Blacklist un utilisateur.";
 
 export const cmd_builder = new SlashCommandBuilder()
