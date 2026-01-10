@@ -12,7 +12,7 @@ import { prisma } from "../../db/prisma.js";
 import config from "../../../config.json" with { type: "json" };
 
 export const name = "blacklist";
-export const description = "Blacklist un utilisateur.";
+export const description = "Blacklist des utilisateurs.";
 
 export const cmd_builder = new SlashCommandBuilder()
   .setName(name)
@@ -167,7 +167,7 @@ export const command = async (
       },
     });
 
-    await interaction.editReply({
+    return await interaction.editReply({
       embeds: [
         new EmbedBuilder()
           .setColor(config.embed.success)

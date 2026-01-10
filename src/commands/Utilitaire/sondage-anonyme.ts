@@ -169,7 +169,10 @@ export const command = async (
       containerData.components[6] as APIActionRowComponent<APIButtonV2>
     ).components[0]!.data.custom_id.split("_")[2]!;
 
-    await db.findOneAndUpdate({ _id: new ObjectId(id) }, { ended: true });
+    await db.findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      { $set: { ended: true } }
+    );
 
     await sondage.message.edit({
       components: [container],
