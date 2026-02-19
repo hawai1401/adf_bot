@@ -28,7 +28,7 @@ export const cmd_builder = new SlashCommandBuilder()
   ]);
 
 export const command = async (
-  bot: botClient,
+  client: botClient,
   interaction: ChatInputCommandInteraction
 ) => {
   await interaction.deferReply();
@@ -55,7 +55,7 @@ export const command = async (
             name: "🔷 - API Discord",
             value: `**${ping_api.toFixed(2)}** ms`,
           },
-          { name: ":robot: - Bot", value: `**${bot.ws.ping}** ms` },
+          { name: ":robot: - Bot", value: `**${client.ws.ping}** ms` },
           {
             name: ":file_cabinet: - Base de données (Prisma)",
             value: `**${ping_prisma.toFixed(2)}** ms`,

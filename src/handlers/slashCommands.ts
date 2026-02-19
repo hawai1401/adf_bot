@@ -5,7 +5,7 @@ import config from "../../config.json" with {type: "json"};
 import * as logs from "../logger.js";
 import fs from "fs";
 
-export const deployementSlash = async (bot: botClient) => {
+export const deployementSlash = async (client: botClient) => {
   // Création de la liste des commandes
 
   const tab_commands = [];
@@ -28,7 +28,7 @@ export const deployementSlash = async (bot: botClient) => {
 
           // Config la commande
           try {
-            bot.commands.set(actual_command.name, actual_command.command);
+            client.commands.set(actual_command.name, actual_command.command);
             logs.deployementSlash(actual_command.name, true);
           } catch (error) {
             // Gestion des erreurs
